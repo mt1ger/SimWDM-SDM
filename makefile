@@ -1,41 +1,68 @@
-CC=g++ 
+CC=g++-7 
 LDFLAGS=-pthread
-CFLAGS=-O3
+CFLAGS=-c 
 EXEC=Simulator
 #EXEC=test_mf
 
-SOURCES=main.cpp\
-        Network.cpp\
-		Dijkstra.cpp\
-		RoutingTable.cpp\
-		TrafficGenerator.cpp\
-		Event.cpp\
-		EventQueue.cpp\
-		ResourceAssignment.cpp\
-		RandomVariable.cpp\
-		Topology.cpp
+SRCS=Network.cpp\
+	 Dijkstra.cpp\
+	 RoutingTable.cpp\
+	 TrafficGenerator.cpp\
+	 Event.cpp\
+	 EventQueue.cpp\
+	 ResourceAssignment.cpp\
+	 RandomVariable.cpp\
+	 Topology.cpp\
+	 main.cpp
 
-all:
-	$(CC) $(CFLAGS) $(LDFLAGS) $(SOURCES) -o $(EXEC)
+OBJS=$(SRCS:.cpp=.o)
+CLEANFILES=*.o Simulator
+
+all: $(OBJS) $(EXEC)
+
+$(EXEC): $(OBJS)
+	$(CC) $(LDFLAGS) $(OBJS) -o $@
+
+Network.o: Network.cpp Network.h EventQueue.h RoutingTable.h TrafficGenerator.h Event.h ResourceAssignment.h
+	$(CC) $(CFLAGS) Network.cpp
+
+Dijkstra.o: Dijkstra.cpp Dijkstra.h Network.h Topology.h
+	$(CC) $(CFLAGS) Dijkstra.cpp
+
+RoutingTable.o: RoutingTable.cpp RoutingTable.h Network.h Dijkstra.h
+	$(CC) $(CFLAGS) RoutingTable.cpp
+
+TrafficGenerator.o: TrafficGenerator.cpp TrafficGenerator.h Network.h EventQueue.h RandomVariable.h
+	$(CC) $(CFLAGS) TrafficGenerator.cpp
+
+Event.o: Event.cpp Event.h
+	$(CC) $(CFLAGS) Event.cpp
+
+EventQueue.o: EventQueue.cpp EventQueue.h Event.h
+	$(CC) $(CFLAGS) EventQueue.cpp
+
+ResourceAssignment.o: ResourceAssignment.cpp ResourceAssignment.h Event.h EventQueue.h RoutingTable.h
+	$(CC) $(CFLAGS) ResourceAssignment.cpp
+
+RandomVariable.o: RandomVariable.cpp RandomVariable.h 
+	$(CC) $(CFLAGS) RandomVariable.cpp
+
+Topology.o: Topology.cpp Topology.h Network.h
+	$(CC) $(CFLAGS) Topology.cpp 
+
+main.o: main.cpp
+	$(CC) $(CFLAGS) main.cpp
+
+.PHONY: clean
+clean:
+	rm $(CLEANFILES)
 
 
-# OBJS=$(SOURCES:.cpp=.o)
+
 # INCLUDES=-I.
-# CLEANFILES=*.o
 
-
-# all: $(SOURCES) $(EXEC)
-# $(EXEC): $(OBJS) 
-# 	$(CC) $(INCLUDES) $(LDFLAGS) $(OBJS) -o $@
-#
-# main.o: main.cpp
-# 	$(CC) $(INCLUDES) $(CFLAGS) main.cpp $(WHICH)
 # .cpp.o: 
 # 	$(CC) $(INCLUDES) $(CFLAGS) $< -o $@
 
-# .PHONY: clean
-# clean:
-# 	rm ${CLEANFILES}
 
-gpp -pthread main.cpp TrafficGenerator.cpp Event.cpp EventQueue.cpp ResourceAssignment.cpp Network.cpp RoutingTable.cpp Topology.cpp Dijkstra.cpp RandomVariable.cpp -o test
 
