@@ -1,8 +1,6 @@
-#define DEBUG_print_new_built_Event
+// #define DEBUG_print_new_built_Event
 
 #include "TrafficGenerator.h"
-
-#define MAX_OCCUPIED_SPECTRAL_SLOTS 30
 
 
 using namespace std;
@@ -21,7 +19,7 @@ void TrafficGenerator::gen_unicast_sd (unsigned int * src, unsigned int * dest) 
 }
 
 
-void TrafficGenerator::gen_temporal_parameters (double * time, unsigned int LorM) {
+void TrafficGenerator::gen_temporal_parameters (double * time, double LorM) {
 	* time = exponential_rv (LorM);
 }
 
@@ -56,9 +54,6 @@ void TrafficGenerator::gen_request (double systemTime) {
 	gen_unicast_sd (&src, &dest);
 	gen_temporal_parameters (&duration, network->Mu);
 	gen_temporal_parameters (&time, network->Lambda);
-	do {
-		occupiedSpectralSlots = uniform_rv (MAX_OCCUPIED_SPECTRAL_SLOTS);
-	} while (occupiedSpectralSlots == 0);
 	startTime = systemTime + time;
 	
 	request = new CircuitRequest (src, dest, startTime, duration, network->RequestCounter);

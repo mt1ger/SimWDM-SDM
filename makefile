@@ -2,7 +2,6 @@ CC=g++-7
 LDFLAGS=-pthread
 CFLAGS=-c 
 EXEC=Simulator
-#EXEC=test_mf
 
 SRCS=Network.cpp\
 	 Dijkstra.cpp\

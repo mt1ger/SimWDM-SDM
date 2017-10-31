@@ -55,8 +55,8 @@ int main (int argc, char *argv[]) {
 	network->NumofRequests = atol (argv[2]);
 	network->NumofWavelengths = atoi (argv[3]);
 	network->NumofCores = atoi (argv[4]);
-	network->Lambda = atoi (argv[5]); 
-	network->Mu = atoi (argv[6]);
+	network->Lambda = atof (argv[5]); 
+	network->Mu = atof (argv[6]);
 	srand (atof (argv[7]));
 	
 	pthread_create (&timer, NULL, timer_thread, NULL);

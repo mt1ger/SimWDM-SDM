@@ -20,7 +20,7 @@ class Network {
 		/*** VARIABLES ***/ 
 		// Inputted Variables   
 		char FileName[500];
-		unsigned int Lambda, Mu;
+		double Lambda, Mu;
 		long long NumofRequests;
 		unsigned int NumofWavelengths;
 		unsigned int NumofCores;
