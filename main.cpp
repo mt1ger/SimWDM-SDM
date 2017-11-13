@@ -2,8 +2,9 @@
 
 #include <pthread.h>
 #include <time.h>
-
+#include <fstream>
 #include <iostream>
+#include <cmath>
 #include <vector>
 #include <string.h>
 #include "Network.h"
@@ -42,10 +43,10 @@ int main (int argc, char *argv[]) {
 		cout << "Please input arguments in the following order: " << endl;	
 		cout << "\tThe file for network topology" << endl; 
 		cout << "\tTotal number of requests" << endl;
-		cout << "\tNumber of wavelengths" << endl;
+		cout << "\tBandwidth of wavelengths" << endl;
 		cout << "\tNumber of cores" << endl;
-		cout << "\tAverage arriving rate of request (Lambda)" << endl;
-		cout << "\tAverage holding time (1 / Mu)" << endl;
+		cout << "\tAverage arriving rate of requests (Lambda)" << endl;
+		cout << "\tAverage serving rate fo requests (Mu) is " << endl;
 		cout << "\tSeed for random number generation" << endl;
 		cout << endl;
 		exit (0);
@@ -53,12 +54,23 @@ int main (int argc, char *argv[]) {
 
 	strcpy (network->FileName, argv[1]);
 	network->NumofRequests = atol (argv[2]);
-	network->NumofWavelengths = atoi (argv[3]);
+	network->BWofWavelength = atoi (argv[3]);
 	network->NumofCores = atoi (argv[4]);
 	network->Lambda = atof (argv[5]); 
 	network->Mu = atof (argv[6]);
 	srand (atof (argv[7]));
-	
+	network->NumofWavelengths = FULL_BW * (1 - PERCENTAGE_GUARDBAND) / network->BWofWavelength;
+
+	cout << "*********************************************************************" << endl;
+	cout << "\tThe file for network topology is " << network->FileName << endl; 
+	cout << "\tTotal number of requests is " << network->NumofRequests << endl;
+	cout << "\tBandwidth of wavelengths is " << network->NumofWavelengths << endl;
+	cout << "\tNumber of cores is " << network->NumofCores << endl;
+	cout << "\tAverage arriving rate of requests (Lambda) is " << network->Lambda << endl;
+	cout << "\tAverage serving rate of requests (Mu) is " << network->Mu << endl;
+	cout << "*********************************************************************" << endl;
+	cout << endl;
+
 	pthread_create (&timer, NULL, timer_thread, NULL);
 
 	network->init ();
@@ -79,6 +91,17 @@ int main (int argc, char *argv[]) {
 	#endif
 
 	network->simulation ();
+	double Erlang = network->Lambda / network->Mu;
+	double BlockingProbability = (double) network->NumofFailedRequests / (double) network->NumofRequests;
+	cout << "The BlockingProbability is " << BlockingProbability << endl;
+	cout << to_string (BlockingProbability) << endl;
+	fstream fp;
+	fp.open ("Plot.txt", fstream::app);
+	string plot = to_string (network->NumofCores) + ' ' + to_string (BlockingProbability) + ' ' + to_string (Erlang) + '\n'; 
+	fp << plot;
+	fp.close ();
+
+	
 
 	EndFlag = 1;
 	pthread_join (timer, NULL);

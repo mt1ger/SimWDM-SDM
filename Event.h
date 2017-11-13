@@ -26,21 +26,21 @@ class Event {
 
 class CircuitRequest : public Event {
 	public:
-		CircuitRequest (unsigned int src, unsigned int dest, double startTime, double duration, long long eventID); 
+		CircuitRequest (unsigned int src, unsigned int dest, double startTime, double duration, long long eventID, unsigned int bandwidth); 
 		~CircuitRequest () {}
 		unsigned int Src;
 		unsigned int Dest;
 		double StartTime;
 		double Duration;
+		unsigned int Bandwidth;
 };
 
 
 class CircuitRelease : public Event {
 	public:
-		CircuitRelease (long long eventID, vector<int> & circuitRoute, unsigned int core, unsigned int wavelength, double releaseTime);
+		CircuitRelease (long long eventID, vector<int> & circuitRoute, vector<int> & wlAllocList, double releaseTime);
 		~CircuitRelease () {}
-		unsigned int Core;
-		unsigned int Wavelength;
+		vector<int> WLAllocList;
 		vector<int> CircuitRoute;
 		double ReleaseTime;
 	

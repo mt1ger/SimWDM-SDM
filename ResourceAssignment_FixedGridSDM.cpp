@@ -15,6 +15,7 @@
 #include <cmath>
 #include "ResourceAssignment_FixedGridSDM.h"
 
+
 using namespace std;
 
 void ResourceAssignment::check_availability_source (unsigned int predecessor, unsigned int successor) {

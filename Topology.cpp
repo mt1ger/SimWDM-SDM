@@ -15,7 +15,6 @@ void Topology::read_topology (void) {
 	nettopo = fopen (network->FileName, "r");
 
 	fscanf (nettopo, "%d", &network->NumofNodes);		
-	cout << "There are " << network->NumofNodes << " nodes in this topology." << endl;
 
 	for (int i = 0; i < network->NumofNodes; i++) {
 		for (int j = 0; j < network->NumofNodes; j++) {

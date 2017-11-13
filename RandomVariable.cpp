@@ -2,12 +2,13 @@
 #include <cmath>
 #include "RandomVariable.h"
 
+// Generate number from [0,1]
 double universal_rv () {
 	return (double) rand () / (double) RAND_MAX;
 }
 
-int uniform_rv (int NumofNodes) {
-	return (int) (universal_rv () * NumofNodes);	
+int uniform_rv (int number) {
+	return (int) (universal_rv () * number);
 }
 
 double exponential_rv (double lambda) {

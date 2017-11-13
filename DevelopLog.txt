@@ -1,0 +1,11 @@
+11/10/2017 
+Q (Solved):
+1. Thinking that WDM tech do not need to obey contiguity constraint. But if request occupied several wavelengths has full flexbilities, in other words: its channels can be allocated all over spectrum and cores, it will be very hard to track the availability of resources. Too many combinations.
+   If fixed-grid SDM applied, problem becomes much easier.
+
+11/12/2017
+A (To 11/10/2017):
+1. a> Check all the single available WL on the first link which is between source and its predecessor.
+   b> Select one of the available WL on the first link and check availability of the same WL on rest of links on the path. Once the WL is available, store it. 
+   c> Loop until the number of available WLs stored can meet the requirement of the request, and allocated the request.
+	This can be the 1.2 version of SimWDM-SDM. And 1.1 version of it can also be compitable.
