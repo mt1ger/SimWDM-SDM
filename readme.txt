@@ -49,7 +49,8 @@ Version 1.2:
 		fixed-grid SDM allocation scheme applied.
 	ResourceAssignment_FullyFlexSDM.cpp:
 		Fully Flexable SDM allocation scheme support.
-7. To compile:
+7. Need to modify header used by Network.cpp.
+8. Need to use different makefile to compile:
 	Differnet "Event.cpp"s associated with each allocation scheme.
 	Different makefiles associated with each allocation scheme.
 

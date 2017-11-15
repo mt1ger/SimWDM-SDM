@@ -38,9 +38,9 @@ class CircuitRequest : public Event {
 
 class CircuitRelease : public Event {
 	public:
-		CircuitRelease (long long eventID, vector<int> & circuitRoute, vector<int> & wlAllocList, double releaseTime);
+		CircuitRelease (long long eventID, vector<int> & circuitRoute, vector<vector<int> > & wlAllocList, double releaseTime);
 		~CircuitRelease () {}
-		vector<int> WLAllocList;
+		vector< vector<int> > WLAllocList;
 		vector<int> CircuitRoute;
 		double ReleaseTime;
 	

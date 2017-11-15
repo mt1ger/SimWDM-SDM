@@ -13,7 +13,7 @@ CircuitRequest::CircuitRequest (unsigned int src, unsigned int dest, double star
 }
 
 
-CircuitRelease::CircuitRelease (long long eventID, vector<int> &circuitRoute, vector<int> & wlAllocList , double releaseTime) {
+CircuitRelease::CircuitRelease (long long eventID, vector<int> &circuitRoute, vector< vector<int> > & wlAllocList , double releaseTime) {
 	CircuitRoute = circuitRoute;
 	ReleaseTime = releaseTime;
 	WLAllocList = wlAllocList;

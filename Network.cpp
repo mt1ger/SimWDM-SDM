@@ -1,6 +1,6 @@
 // #define DEBUG_test_sequence_in_queue
 // #define DEBUG_probe_NumofDoneRequests_and_NumofRequests
-// #define DEBUG_print_EventID_of_blocked_requests
+#define DEBUG_print_EventID_of_blocked_requests
  
 
 #include <iostream> 
@@ -8,7 +8,8 @@
 #include "Network.h"
 #include "TrafficGenerator.h"
 #include "Event.h"
-#include "ResourceAssignment.h"
+// #include "ResourceAssignment_FixedGridSDM.h"
+#include "ResourceAssignment_FullyFlexSDM.h"
 
 
 
@@ -103,6 +104,7 @@ void Network::simulation () {
 	for (int i = 0; i < BlockedRequests.size (); i++) {
 		cout << BlockedRequests[i] << ' ';
 	}
+	cout << endl;
 #endif
 
 	cout << "# of blocked requests is " << NumofFailedRequests << endl;

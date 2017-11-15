@@ -1,5 +1,5 @@
-#ifndef _RESOURCEASSIGNMENT_FIXEDGRIDSDM_H
-#define _RESOURCEASSIGNMENT_FIXEDGRIDSDM_H
+#ifndef _RESOURCEASSIGNMENT_FULLYFLEXSDM_H
+#define _RESOURCEASSIGNMENT_FULLYFLEXSDM_H
 
 #include "Event.h"
 #include "EventQueue.h"
@@ -12,11 +12,11 @@ class ResourceAssignment {
 		~ResourceAssignment () {}
 
 		void check_availability_source (unsigned int predecessor, unsigned int successor); 
-		void check_availability_link (vector<int> * circuitRoute, vector< vector<int> > * WLsforAllocation, unsigned int * WLCounter, int WL);
+		void check_availability_link (vector<int> * circuitRoute, vector< vector<int> > * WLsforAllocation, unsigned int * WLCounter, int core, int wl);
 		void handle_requests (CircuitRequest * circuitRequest);
 		void handle_releases (CircuitRelease * circuitRelease);
 		
-		vector<int> SourceAvailableWL;
+		vector< vector<int> > SourceAvailableWL;
 
 	private:
 		Network * network;
@@ -25,3 +25,5 @@ class ResourceAssignment {
 
 
 #endif
+
+
