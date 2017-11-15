@@ -148,11 +148,12 @@ void ResourceAssignment::handle_requests (CircuitRequest * circuitRequest) {
 		for(unsigned int t = 0; t < CircuitRoute.size()-1; t++)
 			cout << CircuitRoute.at(t) << " --> ";
 		cout << CircuitRoute.at (CircuitRoute.size() - 1) << endl;
-		cout << "Allocated wavelengths: " << endl;
+		cout << "Allocated wavelengths: (" << WLsforAllocation.size () << ')' << endl;
 		for (int i = 0; i < WLsforAllocation.size (); i++) {
 			cout << WLsforAllocation[i][0] << ' ' << WLsforAllocation[i][1] << "    ";
 		}
 		cout << endl;
+		cout << "# of Transponders: " << OccupiedWL << endl;
 		cout << "------------------------------------------------------------" << endl << endl;
 		#endif
 
@@ -161,6 +162,7 @@ void ResourceAssignment::handle_requests (CircuitRequest * circuitRequest) {
 		eventQueue->queue_insert (circuitRelease);
 
 		network->NumofAllocatedRequests++;
+		network->NumofTransponders = network->NumofTransponders + OccupiedWL;
 	}
 
 	#ifdef DEBUG_print_resource_state_on_the_path
@@ -209,11 +211,12 @@ void ResourceAssignment::handle_releases (CircuitRelease * circuitRelease) {
 		}
 	}
 	
+	network->NumofTransponders = network->NumofTransponders - circuitRelease->WLAllocList.size ();
 	network->NumofDoneRequests++;
 	#ifdef PRINT_allocation_block_release
 	cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
 	cout << "Release Event: " << circuitRelease->EventID << "\tTime: " << circuitRelease->EventTime << endl;
-	cout << "List of released WLs: " << endl;
+	cout << "List of released WLs: (" << circuitRelease->WLAllocList.size () << ')' << endl;
 	for (int i = 0; i < circuitRelease->WLAllocList.size (); i++) {
 		cout << circuitRelease->WLAllocList[i][0] << ' ' << circuitRelease->WLAllocList[i][1] << "    ";
 	}

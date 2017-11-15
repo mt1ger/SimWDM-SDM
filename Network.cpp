@@ -45,6 +45,8 @@ void Network::init () {
 	NumofDoneRequests = 0;
 	NumofFailedRequests = 0;
 	NumofAllocatedRequests = 0;
+	NumofTransponders = 0;
+	MaxNumofTransponders = 0;
 }
 
 // #ifdef DEBUG_enable_traffic_allocation_components
@@ -89,6 +91,9 @@ void Network::simulation () {
 		}
 
 		eventQueue->ev_Queue.pop_front (); //This will destroy the poped Event *.
+		cout <<  "AAA " << NumofTransponders << ' ' << MaxNumofTransponders << endl;
+		if (NumofTransponders > MaxNumofTransponders) MaxNumofTransponders = NumofTransponders;
+		cout <<  "BBB " << NumofTransponders << ' ' << MaxNumofTransponders << endl;
 
 	#ifdef DEBUG_probe_NumofDoneReqeusts_and_NumofRequests
 		cout << " " << NumofDoneRequests << " and " << NumofRequests << endl;

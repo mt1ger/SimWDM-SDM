@@ -1,4 +1,4 @@
-#ifndef _NETWORK_H
+ #ifndef _NETWORK_H
 #define _NETWORK_H
 
 #include <vector>
@@ -45,6 +45,7 @@ class Network {
 		// Resource Variables
 		unsigned int NumofWavelengths;
 		vector< vector< vector< vector<bool> > > > Wavelengths;
+		long long MaxNumofTransponders;
 
 		// Debuggin Variables
 		vector<int> BlockedRequests;

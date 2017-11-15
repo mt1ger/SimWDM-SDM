@@ -15,7 +15,7 @@ SRCS=Network.cpp\
 	 main.cpp
 
 OBJS=$(SRCS:.cpp=.o)
-CLEANFILES=*.o Simulator
+CLEANFILES=*.o $(EXEC)
 
 all: $(OBJS) $(EXEC)
 
