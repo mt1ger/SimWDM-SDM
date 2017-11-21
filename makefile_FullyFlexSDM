@@ -1,7 +1,7 @@
 CC=g++-7 
 LDFLAGS=-pthread
 CFLAGS=-c 
-EXEC=Sim_FullyFlexSDM
+EXEC=Sim
 
 SRCS=Network.cpp\
 	 Dijkstra.cpp\
