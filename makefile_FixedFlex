@@ -1,7 +1,7 @@
 CC=g++-7 
 LDFLAGS=-pthread
 CFLAGS=-c 
-EXEC=Sim_FixedGridSDM
+EXEC=Sim_FixedFlex
 
 SRCS=Network.cpp\
 	 Dijkstra.cpp\
@@ -9,7 +9,7 @@ SRCS=Network.cpp\
 	 TrafficGenerator.cpp\
 	 Event.cpp\
 	 EventQueue.cpp\
-	 ResourceAssignment_FixedGridSDM.cpp\
+	 ResourceAssignment_FixedFlex.cpp\
 	 RandomVariable.cpp\
 	 Topology.cpp\
 	 main.cpp
@@ -22,7 +22,7 @@ all: $(OBJS) $(EXEC)
 $(EXEC): $(OBJS)
 	$(CC) $(LDFLAGS) $(OBJS) -o $@
 
-Network.o: Network.cpp Network.h EventQueue.h RoutingTable.h TrafficGenerator.h Event.h ResourceAssignment_FixedGridSDM.h
+Network.o: Network.cpp Network.h EventQueue.h RoutingTable.h TrafficGenerator.h Event.h ResourceAssignment_FixedFlex.h
 	$(CC) $(CFLAGS) Network.cpp
 
 Dijkstra.o: Dijkstra.cpp Dijkstra.h Network.h Topology.h
@@ -40,8 +40,8 @@ Event.o: Event.cpp Event.h
 EventQueue.o: EventQueue.cpp EventQueue.h Event.h
 	$(CC) $(CFLAGS) EventQueue.cpp
 
-ResourceAssignment_FixedGridSDM.o: ResourceAssignment_FixedGridSDM.cpp ResourceAssignment_FixedGridSDM.h Event.h EventQueue.h RoutingTable.h
-	$(CC) $(CFLAGS) ResourceAssignment_FixedGridSDM.cpp
+ResourceAssignment_FixedFlex.o: ResourceAssignment_FixedFlex.cpp ResourceAssignment_FixedFlex.h Event.h EventQueue.h RoutingTable.h
+	$(CC) $(CFLAGS) ResourceAssignment_FixedFlex.cpp
 
 RandomVariable.o: RandomVariable.cpp RandomVariable.h 
 	$(CC) $(CFLAGS) RandomVariable.cpp

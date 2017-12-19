@@ -13,7 +13,7 @@
 #include <iostream>
 #include <string>
 #include <cmath>
-#include "ResourceAssignment_FullyFlexSDM.h"
+#include "ResourceAssignment_FullyFlex.h"
 
 
 using namespace std;
@@ -38,21 +38,13 @@ void ResourceAssignment::check_availability_link (vector<int> * circuitRoute, ve
 	bool AvailableFlag = true;
 	vector<int> HWLsforAllocation;
 
-	if (circuitRoute->size () > 2) {
-		for (int i = 2; i < circuitRoute->size (); i++) {
-			if (network->Wavelengths[circuitRoute->at (i - 1)][circuitRoute->at (i)][core][wl] == true) {
-				AvailableFlag = false;
-				break;
-			}
-		}
-		if (AvailableFlag == true) {
-			HWLsforAllocation.push_back (core);
-			HWLsforAllocation.push_back (wl);
-			WLsforAllocation->push_back (HWLsforAllocation);
-			(* WLCounter)++;
+	for (int i = 2; i < circuitRoute->size (); i++) {
+		if (network->Wavelengths[circuitRoute->at (i - 1)][circuitRoute->at (i)][core][wl] == true) {
+			AvailableFlag = false;
+			break;
 		}
 	}
-	else {
+	if (AvailableFlag == true) {
 		HWLsforAllocation.push_back (core);
 		HWLsforAllocation.push_back (wl);
 		WLsforAllocation->push_back (HWLsforAllocation);

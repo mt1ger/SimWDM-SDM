@@ -93,8 +93,6 @@ int main (int argc, char *argv[]) {
 	network->simulation ();
 	double Erlang = network->Lambda / network->Mu;
 	double BlockingProbability = (double) network->NumofFailedRequests / (double) network->NumofRequests;
-	cout << "The BlockingProbability is " << BlockingProbability << endl;
-	cout << to_string (BlockingProbability) << endl;
 	fstream fp;
 	fp.open ("Plot.txt", fstream::app);
 	string plot = to_string (network->NumofCores) + ' ' + to_string (Erlang) + ' ' + to_string (BlockingProbability) + ' ' + to_string (network->MaxNumofTransponders) + '\n'; 
@@ -102,7 +100,6 @@ int main (int argc, char *argv[]) {
 	fp.close ();
 
 	
-
 	EndFlag = 1;
 	pthread_join (timer, NULL);
 	double TimeSpent = (double)((EndPoint - StartPoint) / CLOCKS_PER_SEC); 
