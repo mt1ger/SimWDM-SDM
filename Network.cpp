@@ -11,9 +11,8 @@
 
 /* Choose from the different allocation scheme */
 // #include "ResourceAssignment_FixedFlex.h"
-// #include "ResourceAssignment_FullyFlex.h"
-#include "ResourceAssignment_IsolatedCore.h"
-
+#include "ResourceAssignment_FullyFlex.h"
+// #include "ResourceAssignment_IsolatedCore.h"
 
 
 using namespace std;
@@ -48,11 +47,18 @@ void Network::init () {
 	NumofDoneRequests = 0;
 	NumofFailedRequests = 0;
 	NumofAllocatedRequests = 0;
-	NumofTransponders = 0;
-	MaxNumofTransponders = 0;
+	NumofTransponders = 0; 
+	MaxNumofTransponders = 0; 
+
+	TotalHoldingTime = 0;
+	TotalTranspondersUsed = 0;
+	TotalCoresUsed = 0;
+	TotalDataSize = 0;
+	TotalWLGsOccupied = 0;
+	TotalWLsOccupied = 0;
 }
 
-// #ifdef DEBUG_enable_traffic_allocation_components
+
 void Network::simulation () {
 	EventQueue *eventQueue = new EventQueue ();
 	TrafficGenerator trafficGenerator (this, eventQueue);
@@ -100,21 +106,29 @@ void Network::simulation () {
 		cout << " " << NumofDoneRequests << " and " << NumofRequests << endl;
 	#endif
 
-		if (NumofDoneRequests == NumofRequests) break;
+		if ((NumofFailedRequests + NumofAllocatedRequests) == NumofRequests) break;
+		// if (NumofDoneRequests == NumofRequests) break;
 	}
 
 	cout << endl << "************************************************************" << endl;
 
-#ifdef DEBUG_print_EventID_of_blocked_requests
+	#ifdef DEBUG_print_EventID_of_blocked_requests
 	cout << "Start to print EventID of blocked reqeusts" << endl;
 	for (int i = 0; i < BlockedRequests.size (); i++) {
 		cout << BlockedRequests[i] << ' ';
 	}
 	cout << endl;
-#endif
+	#endif
+
 	cout << "Max # of Transponders used: " << MaxNumofTransponders << endl;
 	cout << "# of blocked requests is " << NumofFailedRequests << endl;
 	cout << "Network Load: " << Lambda / Mu << " Erlang" << endl; 
 	cout << "Blocking Probability: " << (double) NumofFailedRequests / (double) NumofRequests << endl;
+	cout << "Average Cores Used per Request: " << ((double) TotalCoresUsed / NumofAllocatedRequests) << endl;
+	cout << "Average Transponders Used per Request: " << ((double ) TotalTranspondersUsed / NumofAllocatedRequests) << endl;
+	cout << "Average Holding Time per Request: " << TotalHoldingTime / NumofAllocatedRequests << endl;
+	cout << "Average Innernal Fragmentation: " << (1 - ((double) TotalDataSize / (TotalWLsOccupied * BWofWavelength))) << endl;
+	cout << "Average External Fragmentation: " << (1 - ((double) TotalWLsOccupied / (TotalWLGsOccupied * NumofCores))) << endl;
+	cout << "Average Hybrid Fragmentation: " << (1 - ((double) TotalDataSize / (TotalWLGsOccupied * NumofCores * BWofWavelength))) << endl;
 }
 

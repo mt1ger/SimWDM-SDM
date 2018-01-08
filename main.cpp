@@ -60,11 +60,14 @@ int main (int argc, char *argv[]) {
 	network->Mu = atof (argv[6]);
 	srand (atof (argv[7]));
 	network->NumofWavelengths = FULL_BW * (1 - PERCENTAGE_GUARDBAND) / network->BWofWavelength;
+	
+	cout << "**************************************************" << endl;
+	cout << network->NumofWavelengths << endl;
 
 	cout << "*********************************************************************" << endl;
 	cout << "\tThe file for network topology is " << network->FileName << endl; 
 	cout << "\tTotal number of requests is " << network->NumofRequests << endl;
-	cout << "\tBandwidth of wavelengths is " << network->NumofWavelengths << endl;
+	cout << "\tBandwidth of wavelengths is " << network->BWofWavelength << endl;
 	cout << "\tNumber of cores is " << network->NumofCores << endl;
 	cout << "\tAverage arriving rate of requests (Lambda) is " << network->Lambda << endl;
 	cout << "\tAverage serving rate of requests (Mu) is " << network->Mu << endl;
@@ -93,9 +96,15 @@ int main (int argc, char *argv[]) {
 	network->simulation ();
 	double Erlang = network->Lambda / network->Mu;
 	double BlockingProbability = (double) network->NumofFailedRequests / (double) network->NumofRequests;
+	network->AvgCoresUsed = (double) network->TotalCoresUsed / network->NumofAllocatedRequests;
+	network->AvgHoldingTime = network->TotalHoldingTime / network->NumofAllocatedRequests;
+	network->AvgTranspondersUsed = (double) network->TotalTranspondersUsed / network->NumofAllocatedRequests;
+	network->AvgInnFrag = (1 - ((double) network->TotalDataSize / (network->TotalWLsOccupied * network->BWofWavelength))); 
+	network->AvgExtFrag = (1 - ((double) network->TotalWLsOccupied / (network->TotalWLGsOccupied * network->NumofCores)));
+	network->AvgHybridFrag = (1 - ((double) network->TotalDataSize / (network->TotalWLGsOccupied * network->NumofCores * network->BWofWavelength)));
 	fstream fp;
 	fp.open ("Plot.txt", fstream::app);
-	string plot = to_string (network->NumofCores) + ' ' + to_string (network->BWofWavelength) + ' ' + to_string (Erlang) + ' ' + to_string (BlockingProbability) +  ' '  + to_string (network->MaxNumofTransponders) + '\n'; 
+	string plot = to_string (network->NumofCores) + ' ' + to_string (network->BWofWavelength) + ' ' + to_string (Erlang) + ' ' + to_string (BlockingProbability) +  ' '  + to_string (network->MaxNumofTransponders) + ' ' + to_string (network->AvgCoresUsed) + ' ' + to_string (network->AvgHoldingTime) + ' ' + to_string (network->AvgTranspondersUsed) + ' ' + to_string (network->AvgInnFrag) + ' ' + to_string (network->AvgExtFrag) + ' ' + to_string (network->AvgHybridFrag) + '\n'; 
 	fp << plot;
 	fp.close ();
 

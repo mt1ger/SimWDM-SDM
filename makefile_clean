@@ -1,0 +1,6 @@
+EXEC=Sim_FullyFlex\
+	 Sim_FixedFlex\
+	 Sim_IsolatedCore
+
+all:
+	rm *.o $(EXEC)

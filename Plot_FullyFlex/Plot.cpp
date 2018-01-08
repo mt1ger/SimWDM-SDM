@@ -7,7 +7,7 @@
 #include <thread>
 
 #define NUMOFSEEDS 30
-#define NUMOFTHREADS 2700 
+#define NUMOFTHREADS 3600 // Should be compatible with the number of loops
 
 using namespace std;
 mutex mtx;
@@ -25,18 +25,18 @@ int main () {
 	static unsigned int NumofRequests = 100000;
 	static string Exec = "~/Desktop/Simulator/SimWDM-SDM/Sim_FullyFlex"; 
 	static string Topo = "~/Desktop/Simulator/SimWDM-SDM/Topology/NSF14.txt";
-	thread ThreadPointer[2700];
+	thread ThreadPointer[NUMOFTHREADS]; 
 	unsigned int cnt = 0;
 
 	ofstream plot ("Plot.txt");
 
 	Core.push_back (1);
-	Core.push_back (2);
 	Core.push_back (4);
+	Core.push_back (7);
 
 	BW.push_back (10);
-	BW.push_back (40);
-	BW.push_back (100);
+	// BW.push_back (40);
+	// BW.push_back (100);
 	
 
 	cout << "Input a number for seed and press enter: " << endl;
@@ -47,7 +47,7 @@ int main () {
 	for (unsigned int k = 0; k < Core.size (); k++) {
 		for (unsigned int bw = 0; bw < BW.size (); bw++) {
 			for (unsigned int seed = 0; seed < NUMOFSEEDS; seed++) {
-				for (unsigned int l = 500; l < 1401; l = l + 100) {
+				for (unsigned int l = 100; l < 491; l = l + 10) {
 					string Cmd = Exec + ' ' + Topo + ' ' + to_string (NumofRequests) + ' ' + to_string (BW[bw]) + ' ' + to_string (Core[k]) + ' ' + to_string (l * Core[k]) + " 1 " + to_string ((double) rand () / 65535);
 					ThreadPointer[cnt] = thread (thread_function, Cmd);
 					cnt++;

@@ -1,6 +1,7 @@
-// #define DEBUG_print_new_built_Event
+#define DEBUG_print_new_built_Event
 
 #include "TrafficGenerator.h"
+#include <cmath>
 
 
 using namespace std;
@@ -25,7 +26,7 @@ void TrafficGenerator::gen_temporal_parameters (double * time, double LorM) {
 
 
 void TrafficGenerator::gen_first_request () {
-	unsigned int src, dest, bandwidth;
+	unsigned int src, dest, datasize, occupiedWavelengths;
 	double startTime = 0;
 	double duration;
 	CircuitRequest * request;
@@ -33,15 +34,16 @@ void TrafficGenerator::gen_first_request () {
 	gen_unicast_sd (&src, &dest);
 	gen_temporal_parameters (&duration, network->Mu);
 	do {
-		bandwidth = uniform_rv (MAX_BW_REQUEST);
-	} while (bandwidth == 0);
+		datasize = uniform_rv (MAX_DATASIZE_REQUEST);
+	} while (datasize == 0);
+	occupiedWavelengths = ceil ((double) datasize / network->BWofWavelength);
 
-	request = new CircuitRequest (src, dest, startTime, duration, network->RequestCounter, bandwidth);
+	request = new CircuitRequest (src, dest, startTime, duration, network->RequestCounter, datasize, occupiedWavelengths);
 	
 	network->RequestCounter++;
 	#ifdef DEBUG_print_new_built_Event
-	cout << "New Built event:" << endl;
-	cout << request->Src << ' ' << request->Dest << ' ' << request->StartTime << ' ' << request->Duration << ' ' << request->Bandwidth << endl;
+	cout << "\tNew Built event:" << endl;
+	cout << '\t' << request->Src << ' ' << request->Dest << ' ' << request->StartTime << ' ' << request->Duration << ' ' << request->DataSize << ' ' << request->OccupiedWavelengths << endl;
 	#endif
 
 	eventQUeue->ev_Queue.push_back (request);
@@ -50,7 +52,7 @@ void TrafficGenerator::gen_first_request () {
 
 //releases' generation will be taken care of in "handle_requests" in "ResourceAssignment.cpp" 
 void TrafficGenerator::gen_request (double systemTime) {
-	unsigned int src, dest, bandwidth;
+	unsigned int src, dest, datasize, occupiedWavelengths;
 	double time, startTime, duration;
 	CircuitRequest * request;
 
@@ -58,18 +60,19 @@ void TrafficGenerator::gen_request (double systemTime) {
 	gen_temporal_parameters (&duration, network->Mu);
 	gen_temporal_parameters (&time, network->Lambda);
 	do {
-		bandwidth = uniform_rv (MAX_BW_REQUEST);
-	} while (bandwidth == 0);
-	
+		datasize = uniform_rv (MAX_DATASIZE_REQUEST);
+	} while (datasize == 0);
+	occupiedWavelengths = ceil ((double) datasize / network->BWofWavelength);
+
 	startTime = systemTime + time;
 	
-	request = new CircuitRequest (src, dest, startTime, duration, network->RequestCounter, bandwidth);
+	request = new CircuitRequest (src, dest, startTime, duration, network->RequestCounter, datasize, occupiedWavelengths);
 	
 	network->RequestCounter++;
 
 	#ifdef DEBUG_print_new_built_Event
 	cout << "\tNew Built event:" << endl;
-	cout << '\t' << request->EventID << ' ' <<request->Src << ' ' << request->Dest << ' ' << request->StartTime << ' ' << request->Duration << ' ' << request->Bandwidth << endl;
+	cout << '\t' << request->EventID << ' ' <<request->Src << ' ' << request->Dest << ' ' << request->StartTime << ' ' << request->Duration << ' ' << request->DataSize << ' ' << request->OccupiedWavelengths << endl;
 	#endif
 
 	eventQUeue->queue_insert (request);

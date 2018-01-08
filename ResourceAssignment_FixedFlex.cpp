@@ -1,13 +1,13 @@
 /**************************************************
  * First-Fit  
  **************************************************/
-// #define DEBUG_print_resource_state_on_the_path
-// #define DEBUG_in_check_availability_link
-// #define DEBUG_print_SourceAvailableWL
-// #define DEBUG_collect_EventID_of_blocked_requests //Need to collaberate with DEBUG_print_EventID_of_blocked_requests
+#define DEBUG_print_resource_state_on_the_path
+#define DEBUG_in_check_availability_link
+#define DEBUG_print_SourceAvailableWL
+#define DEBUG_collect_EventID_of_blocked_requests //Need to collaberate with DEBUG_print_EventID_of_blocked_requests
 
 
-// #define PRINT_allocation_block_release 
+#define PRINT_allocation_block_release 
 
 
 #include <iostream>
@@ -65,7 +65,7 @@ void ResourceAssignment::handle_requests (CircuitRequest * circuitRequest) {
 	vector< vector<int> > WLsforAllocation;
 	unsigned int WLCounter = 0;
 
-	OccupiedWL = ceil ((double) circuitRequest->Bandwidth / network->BWofWavelength / network->NumofCores);
+	OccupiedWL = ceil ((double) circuitRequest->OccupiedWavelengths / network->NumofCores);
 	CircuitRoute = routingTable.get_shortest_path (circuitRequest->Src, circuitRequest->Dest);
 
 	#ifdef DEBUG_print_resource_state_on_the_path
@@ -143,15 +143,25 @@ void ResourceAssignment::handle_requests (CircuitRequest * circuitRequest) {
 			cout << WLsforAllocation[i][1] << ' ';
 		}
 		cout << endl;
+		cout << "Number of Cores: " << network->NumofCores << endl;
+		cout << "Number of Transponders: " << circuitRequest->OccupiedWavelengths << endl;
+		cout << "Innernal Fragmentation: " << (1 - ((double) circuitRequest->DataSize / (circuitRequest->OccupiedWavelengths * network->BWofWavelength))) << endl;
+		cout << "External Fragmentation: " << (1 - (double) circuitRequest->OccupiedWavelengths / (OccupiedWL * network->NumofCores)) << endl;
 		cout << "------------------------------------------------------------" << endl << endl;
 		#endif
 
 		CircuitRelease * circuitRelease;
-		circuitRelease = new CircuitRelease (circuitRequest->EventID, CircuitRoute, WLsforAllocation, circuitRequest->StartTime + circuitRequest->Duration);
+		circuitRelease = new CircuitRelease (circuitRequest->EventID, CircuitRoute, WLsforAllocation, circuitRequest->StartTime + circuitRequest->Duration, circuitRequest->OccupiedWavelengths);
 		eventQueue->queue_insert (circuitRelease);
 
 		network->NumofAllocatedRequests++;
-		network->NumofTransponders = network->NumofTransponders + (WLsforAllocation.size () * network->NumofCores);
+		network->NumofTransponders = network->NumofTransponders + circuitRequest->OccupiedWavelengths;
+		network->TotalHoldingTime += circuitRequest->Duration;
+		network->TotalCoresUsed += network->NumofCores;
+		network->TotalTranspondersUsed += circuitRequest->OccupiedWavelengths;
+		network->TotalWLsOccupied += circuitRequest->OccupiedWavelengths;
+		network->TotalWLGsOccupied += OccupiedWL;
+		network->TotalDataSize += circuitRequest->DataSize;
 	}
 
 	#ifdef DEBUG_print_resource_state_on_the_path
@@ -194,7 +204,7 @@ void ResourceAssignment::handle_releases (CircuitRelease * circuitRelease) {
 	}
 	
 	network->NumofDoneRequests++;
-	network->NumofTransponders = network->NumofTransponders - circuitRelease->WLAllocList.size () * network->NumofCores;
+	network->NumofTransponders = network->NumofTransponders - circuitRelease->TranspondersUsed;
 	#ifdef PRINT_allocation_block_release
 	cout << "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
 	cout << "Release Event: " << circuitRelease->EventID << "\tTime: " << circuitRelease->EventTime << endl;

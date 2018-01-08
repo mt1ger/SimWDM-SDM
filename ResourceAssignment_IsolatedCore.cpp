@@ -1,13 +1,12 @@
 /**************************************************
  * First-Fit  
  **************************************************/
-// #define DEBUG_print_resource_state_on_the_path
-// #define DEBUG_in_check_availability_link
-// #define DEBUG_print_IsoAvailableWL
-// #define DEBUG_collect_EventID_of_blocked_requests //Need to collaberate with DEBUG_print_EventID_of_blocked_requests
+#define DEBUG_print_resource_state_on_the_path
+#define DEBUG_print_IsoAvailableWL
+#define DEBUG_collect_EventID_of_blocked_requests //need to collaberate with debug_print_eventid_of_blocked_requests
 
 
-// #define PRINT_allocation_block_release 
+#define PRINT_allocation_block_release 
 
 
 #include <iostream>
@@ -62,7 +61,7 @@ void ResourceAssignment::handle_requests (CircuitRequest * circuitRequest) {
 	vector<int> HWLsforAllocation;
 	unsigned int WLCounter = 0;
 
-	OccupiedWL = ceil ((double) circuitRequest->Bandwidth / network->BWofWavelength );
+	OccupiedWL = circuitRequest->OccupiedWavelengths;
 	CircuitRoute = routingTable.get_shortest_path (circuitRequest->Src, circuitRequest->Dest);
 
 	#ifdef DEBUG_print_resource_state_on_the_path
@@ -153,16 +152,24 @@ void ResourceAssignment::handle_requests (CircuitRequest * circuitRequest) {
 			cout << WLsforAllocation[i][0] << ' ' << WLsforAllocation[i][1] << "    ";
 		}
 		cout << endl;
+		cout << "# of Cores: " << '1' << endl;
 		cout << "# of Transponders: " << OccupiedWL << endl;
+		cout << "Inner Fragmentation: " << (1 - ((double) circuitRequest->DataSize / (circuitRequest->OccupiedWavelengths * network->BWofWavelength))) << endl; 
+
 		cout << "------------------------------------------------------------" << endl << endl;
 		#endif
 
 		CircuitRelease * circuitRelease;
-		circuitRelease = new CircuitRelease (circuitRequest->EventID, CircuitRoute, WLsforAllocation, circuitRequest->StartTime + circuitRequest->Duration);
+		circuitRelease = new CircuitRelease (circuitRequest->EventID, CircuitRoute, WLsforAllocation, circuitRequest->StartTime + circuitRequest->Duration, OccupiedWL);
 		eventQueue->queue_insert (circuitRelease);
 
 		network->NumofAllocatedRequests++;
 		network->NumofTransponders = network->NumofTransponders + OccupiedWL;
+		network->TotalCoresUsed ++;
+		network->TotalHoldingTime += circuitRequest->Duration;
+		network->TotalTranspondersUsed += OccupiedWL;
+		network->TotalDataSize += circuitRequest->DataSize;
+		network->TotalWLsOccupied += circuitRequest->OccupiedWavelengths;
 	}
 
 	#ifdef DEBUG_print_resource_state_on_the_path

@@ -1,13 +1,13 @@
 /**************************************************
  * First-Fit  
  **************************************************/
-// #define DEBUG_print_resource_state_on_the_path
-// #define DEBUG_in_check_availability_link
-// #define DEBUG_print_SourceAvailableWL
-// #define DEBUG_collect_EventID_of_blocked_requests //Need to collaberate with DEBUG_print_EventID_of_blocked_requests
+#define DEBUG_print_resource_state_on_the_path
+#define DEBUG_in_check_availability_link
+#define DEBUG_print_SourceAvailableWL
+#define DEBUG_collect_EventID_of_blocked_requests //Need to collaberate with DEBUG_print_EventID_of_blocked_requests
 
 
-// #define PRINT_allocation_block_release 
+#define PRINT_allocation_block_release 
 
 
 #include <iostream>
@@ -56,14 +56,14 @@ void ResourceAssignment::handle_requests (CircuitRequest * circuitRequest) {
 	RoutingTable routingTable (network);
 
 	vector<int> CircuitRoute;
-	unsigned int wavelength;
 	bool AvailableFlag = true;
 	vector<int> Wavelengths;
 	unsigned int OccupiedWL;
 	vector< vector<int> > WLsforAllocation;
 	unsigned int WLCounter = 0;
+	unsigned int CoreCnter = 0;
 
-	OccupiedWL = ceil ((double) circuitRequest->Bandwidth / network->BWofWavelength );
+	OccupiedWL = circuitRequest->OccupiedWavelengths; 
 	CircuitRoute = routingTable.get_shortest_path (circuitRequest->Src, circuitRequest->Dest);
 
 	#ifdef DEBUG_print_resource_state_on_the_path
@@ -116,7 +116,6 @@ void ResourceAssignment::handle_requests (CircuitRequest * circuitRequest) {
 	}
 
 	if (AvailableFlag == false) {
-		network->NumofDoneRequests++;
 
 		#ifdef DEBUG_collect_EventID_of_blocked_requests
 		network->BlockedRequests.push_back (circuitRequest->EventID);
@@ -129,6 +128,7 @@ void ResourceAssignment::handle_requests (CircuitRequest * circuitRequest) {
 		#endif
 
 		network->NumofFailedRequests++;
+		network->NumofDoneRequests++;
 	}
 	else if (AvailableFlag == true) {
 
@@ -141,20 +141,34 @@ void ResourceAssignment::handle_requests (CircuitRequest * circuitRequest) {
 			cout << CircuitRoute.at(t) << " --> ";
 		cout << CircuitRoute.at (CircuitRoute.size() - 1) << endl;
 		cout << "Allocated wavelengths: (" << WLsforAllocation.size () << ')' << endl;
+		int temp = WLsforAllocation[0][0];
+		CoreCnter = 1;
 		for (int i = 0; i < WLsforAllocation.size (); i++) {
 			cout << WLsforAllocation[i][0] << ' ' << WLsforAllocation[i][1] << "    ";
+			if (WLsforAllocation[i][0] != temp) {
+				CoreCnter++;
+				temp = WLsforAllocation[i][0];
+			}
 		}
 		cout << endl;
+
+		cout << "# of Cores: " << CoreCnter << endl;
 		cout << "# of Transponders: " << OccupiedWL << endl;
+		cout << "Inner Fragmentation: " << (1 - ((double) circuitRequest->DataSize / (circuitRequest->OccupiedWavelengths * network->BWofWavelength))) << endl; 
 		cout << "------------------------------------------------------------" << endl << endl;
 		#endif
 
 		CircuitRelease * circuitRelease;
-		circuitRelease = new CircuitRelease (circuitRequest->EventID, CircuitRoute, WLsforAllocation, circuitRequest->StartTime + circuitRequest->Duration);
+		circuitRelease = new CircuitRelease (circuitRequest->EventID, CircuitRoute, WLsforAllocation, circuitRequest->StartTime + circuitRequest->Duration, OccupiedWL);
 		eventQueue->queue_insert (circuitRelease);
 
 		network->NumofAllocatedRequests++;
+		network->TotalCoresUsed += CoreCnter;
+		network->TotalHoldingTime += circuitRequest->Duration;
+		network->TotalTranspondersUsed += OccupiedWL;
 		network->NumofTransponders = network->NumofTransponders + OccupiedWL;
+		network->TotalDataSize += circuitRequest->DataSize;
+		network->TotalWLsOccupied += circuitRequest->OccupiedWavelengths;
 	}
 
 	#ifdef DEBUG_print_resource_state_on_the_path
@@ -223,7 +237,7 @@ void ResourceAssignment::handle_releases (CircuitRelease * circuitRelease) {
 	cout << endl;
 	cout << "Start to print resources on the path after release" << endl;
 	for (int i = 1; i < circuitRelease->CircuitRoute.size (); i++) {
-		cout << "On link " << circuitRelease->CircuitRoute[i-1] << " to " << circuitRelease->CircuitRoute[i] << endl;
+		cout << "On link " << circuitRelease->CircuitRoute[i - 1] << " to " << circuitRelease->CircuitRoute[i] << endl;
 		for (int j = 0; j < network->NumofCores; j++) {
 			for (int k = 0; k < network->NumofWavelengths; k++) {
 				cout << network->Wavelengths[circuitRelease->CircuitRoute[i - 1]][circuitRelease->CircuitRoute[i]][j][k] << ' ';
@@ -233,6 +247,5 @@ void ResourceAssignment::handle_releases (CircuitRelease * circuitRelease) {
 		cout << endl;
 	}
 	#endif
-	
 }
 
